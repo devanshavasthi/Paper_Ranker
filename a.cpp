@@ -1,5 +1,6 @@
 #include<bits/stdc++.h>
+
 int main() {
-	cout<<"hello my name Nikhil";
+	cout<<" my name Nikhil";
 	return 0;
 }

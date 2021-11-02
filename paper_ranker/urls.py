@@ -20,3 +20,6 @@ urlpatterns = [
 	path('ranker/', include('ranker.urls')),
 	path('admin/', admin.site.urls),
 ]
+
+
+

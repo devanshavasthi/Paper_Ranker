@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from bs4 import BeautifulSoup as bs
 import selenium
 import requests
-
+from .models import FrequentPaper,NewPaper
 # Create your views here.
 
 

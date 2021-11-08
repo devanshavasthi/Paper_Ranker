@@ -23,6 +23,8 @@ class NewPaper(models.Model):
     authors=models.CharField(max_length=300,help_text="Enter names of authors of the paper")
     conference=models.CharField(max_length=100,blank=True,null=True,default="NA")
     rank=models.CharField(max_length=2,help_text="Rank of conference")
+    #-----Adding date field-----
+    date = models.DateField()
     def __str__(self):
         """String for representing the Model object."""
         return self.papername

@@ -4,9 +4,14 @@
 {% comment %} <div class="position-absolute top-50 start-50 translate-middle"><p class="h1">PAPER RANKER</p></div> {% endcomment %}
 
 <div class="position-absolute top-50 start-50 translate-middle">
-  <div class="input-group mb-auto">
-  <input type="text" class="form-control" aria-label="Search" aria-describedby="basic-addon1">
-  </div>
+  <form>
+    <div class="mb-3">
+      <input type="text" class="form-control" id="tosearch" aria-describedby="emailHelp">
+    </div>
+    <div class="text-center">
+      <button type="submit" class="btn btn-secondary">Search</button>
+    </div>
+  </form>
 </div>
 
 {% endblock body %}

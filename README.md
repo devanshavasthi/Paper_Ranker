@@ -1,2 +1,2 @@
-# Project_Ranker
-Project Ranker
+# Paper_Ranker
+Paper Ranker

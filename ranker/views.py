@@ -50,9 +50,15 @@ def signin(request):
 
 	return render(request,'signin.html')
 
+#-----signout page added-----
 def signout(request):
     logout(request)
     return redirect("/")
+
+#-----paperData page added-----
+def paperData(request):
+	return render(request,'paperData.html')
+
 
 
 def search(request,key):

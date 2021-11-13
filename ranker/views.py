@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
-from ranker.models import fetchinfo
+from ranker.models import fetchinfo,conferencedata
 
 from bs4 import BeautifulSoup as bs
 import selenium
 import requests
 from .models import FrequentPaper,NewPaper
-
+import json
 #-----for authentication-----
 from django.contrib.auth.models import User
 from django.contrib.auth import logout, authenticate, login
@@ -59,47 +59,60 @@ def signout(request):
     return redirect("/")
 
 
-def search(request,key):
+
+def getconferencedata(request):
+	url1 = "http://www.conferenceranks.com/data/era2010.min.js"
+	url2 = "http://www.conferenceranks.com/data/qualis2012.min.js"
 	
+	response = requests.get(url2).text
+	#print(response.text[:89])
+	#fre = response.text[89:-2]
+	a=0
+	b=0
+	ls = []
+	
+	while(1):	
+		a = response.find("{",a+1)
+		b = response.find("}",b+1)
+		#print(a," ",b)
+		if a == -1 :
+			break
+		else:			
+			jdata = json.loads(response[a:b+1])	
+			c = conferencedata(name = jdata["name"] ,abbrv = jdata["abbrv"], rank = jdata["rank"],ptype = "qualis")
+			c.save()
+	#print(response)
+	#jsonr = response.json()
+	#return JsonResponse(res)
+	print(conferencedata.objects.all())
+	return HttpResponse("success")
 
-	'''url = "https://arxiv.org/archive/cs"
-	page = requests.get(url)
-	gd['soup']  = bs(page.text,"html.parser")	
-	soup = gd['soup']
-	a = soup.find_all("ul")
-	z = a[3].find_all("li")
-	print(z[0].find("b"))
-	m = z[0].find_all("a")
-	return HttpResponse(m)'''
-
-def dbp(request,key = "machine+learning"):
+def dbp(request,key = "cryptography"):
 	query = ""
 	key = key.replace(" ","+").lower()
-	url = "https://api.semanticscholar.org/graph/v1/paper/search?query="+key+"&limit=100&offset=100&fields=title,authors,venue,year,citationCount,influentialCitationCount,url,isOpenAccess"
+	url = "https://api.semanticscholar.org/graph/v1/paper/search?query="+key+"&limit=100&offset=0&fields=title,authors,venue,year,citationCount,influentialCitationCount,url,isOpenAccess"
 	response = requests.get(url)
 	jsonr = response.json()
 	data = jsonr['data']
 	for x in data:
-		print(x)
-		pid = x["paperId"]
-		papername = x["title"]
-		auth =""
+		pid_var = x["paperId"]
+		papername_var = x["title"]
+		auth_var =""
 		for y in x["authors"]:
-			auth = auth+", "+y['name']
-			authors = auth
+			auth_var = auth_var+", "+y['name']
 		if "venue" in x:
-			conf = x["venue"]
+			conf_var = x["venue"]
 		else:
-			conf = "NULL"
-		cit = int(x["citationCount"])
-		infc = int(x["influentialCitationCount"] )
-		rank = random.choices(["A","B","C","D","E"])[0]
-		url = x["url"]		
-		print(x["isOpenAccess"] ,type(x["isOpenAccess"] ))
-		b = fetchinfo(keyword ="asd",paperid = pid,papername = papername,rank =rank, authors = auth, conference = conf,url = url, citations = cit,infcitations =  infc )
+			conf_var = "NULL"
+		cit_var = int(x["citationCount"])
+		inflc_var = int(x["influentialCitationCount"] )
+		rank_var = random.choices(["A","B","C","D","E"])[0]
+		url_var = x["url"]		
+		b = fetchinfo(keyword ="asd",paperid = pid_var,papername = papername_var,rank =rank_var, authors = auth_var, conference = conf_var,url = url_var, citations = cit_var,infcitations =  inflc_var )
 		b.save()
 	return JsonResponse(x)
 	
 def del_all(self):
+	conferencedata.objects.all().delete()
 	fetchinfo.objects.all().delete()
 	return HttpResponse("deleted")    

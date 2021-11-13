@@ -15,7 +15,15 @@ class fetchinfo(models.Model):
 	access = models.BooleanField(default = False)
 	def __str__(self):
         	return self.papername
-
+class conferencedata(models.Model):
+	name = models.CharField(max_length=100,help_text='conference name',default ="NULL" )
+	abbrv = models.CharField(max_length=10,help_text='abbreviation',default ="NULL" )
+	rank = models.CharField(max_length=3,help_text='abbreviation',default ="NULL" )
+	ptype = models.CharField(max_length=20,help_text='abbreviation',default ="NULL" )
+	def __str__(self):
+        	return self.name + " " +self.rank +" "+ self.ptype	
+        	
+        	
 class FrequentPaper(models.Model):
     """A typical class defining a model, derived from the Model class."""
 

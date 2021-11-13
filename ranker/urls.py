@@ -9,6 +9,7 @@ urlpatterns = [
     path('paper', views.paper, name='paper'),
     path('signin', views.signin, name='signin'),
     path('signout', views.signout, name='signout'),
+    path('conf',views.getconferencedata,name='confdata'),
     path("db",views.dbp),
     path("del",views.del_all)
 ]

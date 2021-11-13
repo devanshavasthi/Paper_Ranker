@@ -2,13 +2,25 @@
 
 {% block body %} 
 
-<div class="position-absolute top-50 start-50 translate-middle container">
+<div class="position-absolute start-50 translate-middle container" style="margin-top: 16%;">
   <form>
     <div class="text-center mb-4">
       <h1>Paper Ranker</h1>
     </div>
     <div class="input-group mb-3 mx-auto w-75">
-      <input type="text" class="form-control" style="border-radius: 1rem;" aria-label="Username" aria-describedby="basic-addon1">
+      <input type="text" class="form-control" style="border-radius: 1rem;" aria-label="Username" aria-describedby="basic-addon1" list = "areasOfPaperSearch">
+        <datalist id = "areasOfPaperSearch">
+          <option value ="computer vision">
+          <option value ="machine learning">
+          <option value ="pattern matching">
+          <option value ="pattter recognition">
+          <option value ="computer architecture">
+          <option value ="computer science">
+          <option value ="communication security">
+          <option value ="computer software">
+          <option value ="computer science logic">
+ 
+        </datalist>
     </div>
     <div class="text-center">
       <button type="submit" class="btn btn-secondary">Search</button>

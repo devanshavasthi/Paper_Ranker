@@ -20,7 +20,7 @@ class fetchinfo(models.Model):
         	
 class conferencedata(models.Model):
 	name = models.CharField(max_length=100,help_text='conference name',default ="NULL" )
-	abbrv = models.CharField(max_length=10,help_text='abbreviation',default ="NULL" )
+	abbrv = models.CharField(max_length=10,help_text='abbreviation',default ="NULL", null=True )
 	rank = models.CharField(max_length=3,help_text='abbreviation',default ="NULL" )
 	ptype = models.CharField(max_length=20,help_text='abbreviation',default ="NULL" )
 	def __str__(self):
@@ -43,6 +43,7 @@ class FrequentPaper(models.Model):
         return self.papername
     class Meta:
         ordering = ['rank','papername']
+
 class NewPaper(models.Model):
     """A typical class defining a model, derived from the Model class."""
 

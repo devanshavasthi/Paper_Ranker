@@ -3,7 +3,7 @@ from django.http import HttpResponse,JsonResponse
 from django.conf import settings
 from itertools import islice
 from django.views.generic import TemplateView, ListView
-from .models import FrequentPaper,NewPaper, fetchinfo,conferencedata
+from .models import FrequentPaper,NewPaper, fetchinfo,conferencedata,Mkeyword
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.contrib.auth.models import User
 from django.contrib.auth import logout, authenticate, login
@@ -135,15 +135,30 @@ class SearchResultsView(ListView):
         return search(query)
         
 
-def search(key = "machine learning",key2 =7 ):
-	print(key)
-	key = key.replace(" ","+").lower()
+def search(key = "machine learning",key2 =5 ):
+	
+	keyword = key
+	keyword = keyword.lower()
+	if Mkeyword.objects.filter(keyword=keyword).exists():
+		startpage = Mkeyword.objects.filter(keyword=keyword).first().pages
+	else:
+		sb = Mkeyword(keyword=keyword,pages =0)
+		sb.save()
+		startpage=0
+	key = keyword.replace(" ","+").lower()
 	tot = dict()
 	total =0
 	count =0
 	context =[]
+	dbres = fetchinfo.objects.filter(keyword=keyword)
+	for x in dbres:
+		
+		tmp = [x.papername,x.authors[:20],x.rank,x.url,x.conference]
+		#print(count , tmp)
+		context.append(tmp)
 	ttime = time.time()
-	for mx in range(key2):
+	Mkeyword.objects.filter(keyword=keyword.lower())
+	for mx in range(startpage, startpage+key2):
 		val = str(mx*100)
 		url = "https://api.semanticscholar.org/graph/v1/paper/search?query="+key+"&limit=100&offset="+val+"&fields=title,authors,venue,year,citationCount,influentialCitationCount,url,isOpenAccess"
 	
@@ -160,6 +175,8 @@ def search(key = "machine learning",key2 =7 ):
 		for x in data:
 			pid_var = x["paperId"]
 			if fetchinfo.objects.filter(paperid=pid_var).exists():
+				res = fetchinfo.objects.filter(paperid=pid_var).first()
+				context.append([res.papername,res.authors[:20],res.rank,res.conference])
 				continue
 			else:
 				total +=1
@@ -192,9 +209,13 @@ def search(key = "machine learning",key2 =7 ):
 				tmp = [papername_var,auth_var[:20],rank_var,url_var,conf_var]
 				#print(count , tmp)
 				context.append(tmp)
-				b = fetchinfo(keyword ="asd",paperid = pid_var,papername = papername_var,rank =rank_var, authors = auth_var, conference = conf_var,url = url_var, citations = cit_var,infcitations =  inflc_var )
+				b = fetchinfo(keyword =keyword,paperid = pid_var,papername = papername_var,rank =rank_var, authors = auth_var, conference = conf_var,url = url_var, citations = cit_var,infcitations =  inflc_var )
 				b.save()
 		if count >10:
+			
+			obj =Mkeyword.objects.filter(keyword=keyword).first()
+			obj.pages= mx+1
+			obj.save()
 			break
 	#for x in tot:
 	#	print(x , " ", tot[x])

@@ -27,6 +27,10 @@ class conferencedata(models.Model):
         	return self.name + " " +self.rank +" "+ self.ptype	
         	
 
+class Mkeyword(models.Model):
+	keyword = models.CharField(max_length=100,help_text='keyword for search',default ="NULL" )
+	pages=models.IntegerField(help_text="Pages already seen")
+	
 
 
 class FrequentPaper(models.Model):

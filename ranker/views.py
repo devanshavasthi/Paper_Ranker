@@ -154,7 +154,6 @@ def search(key = "machine learning",key2 =5 ):
 	for x in dbres:
 		
 		tmp = [x.papername,x.authors[:20],x.rank,x.url,x.conference]
-		#print(count , tmp)
 		context.append(tmp)
 	ttime = time.time()
 	Mkeyword.objects.filter(keyword=keyword.lower())
@@ -209,6 +208,7 @@ def search(key = "machine learning",key2 =5 ):
 				tmp = [papername_var,auth_var[:20],rank_var,url_var,conf_var]
 				#print(count , tmp)
 				context.append(tmp)
+				#print(tmp)
 				b = fetchinfo(keyword =keyword,paperid = pid_var,papername = papername_var,rank =rank_var, authors = auth_var, conference = conf_var,url = url_var, citations = cit_var,infcitations =  inflc_var )
 				b.save()
 		if count >10:
@@ -217,11 +217,11 @@ def search(key = "machine learning",key2 =5 ):
 			obj.pages= mx+1
 			obj.save()
 			break
-	#for x in tot:
-	#	print(x , " ", tot[x])
-	print(total)
-	print(time.time() - ttime)
+	
+	print("time taken : ",time.time() - ttime)
 	#print(context)
+	#for z in context:
+	#	print(z)
 	return context
 	
 

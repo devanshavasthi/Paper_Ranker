@@ -5,7 +5,7 @@
 <div class="position-absolute start-50 translate-middle container" style="margin-top: 16%;">
   <form action ={% url "search" %} method ="get">{% csrf_token %}
     <div class="text-center mb-4">
-      <h1>Paper Ranker</h1>
+      <h1 style="color: black;">Paper Ranker</h1>
     </div>
     <div class="input-group mb-3 mx-auto w-75">
       <input type="text" name ="q" class="form-control" style="border-radius: 1rem;" aria-label="Username" aria-describedby="basic-addon1" list = "areasOfPaperSearch">

@@ -6,6 +6,7 @@ from django.views.generic import TemplateView, ListView
 from .models import FrequentPaper,NewPaper, fetchinfo,conferencedata,Mkeyword
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.contrib.auth.models import User
+from django.db.models import Max
 from django.contrib.auth import logout, authenticate, login
 from datetime import datetime
 from requests.exceptions import HTTPError
@@ -62,8 +63,26 @@ def signout(request):
     return redirect("/")
 
 #-----paperData page added-----
-def paperData(request,key = "machine learning"):
-	return render(request,'paperData.html')
+
+class frequentView(ListView):
+    template_name = 'paperData.html'
+
+    def get_queryset(self): # new
+        
+        return paperData
+        
+def paperData():
+	obj = Mkeyword.objects.aggregate(Max('frequency'))
+	maxf =obj["frequency__max"] 
+	obj = Mkeyword.objects.filter(frequency = maxf).first()
+	kname = obj.keyword
+	context =[]
+	dbres = fetchinfo.objects.filter(keyword=kname)
+	for x in dbres:
+		
+		tmp = [x.papername,x.authors[:20],x.rank,x.url,x.conference]
+		context.append(tmp)
+	return context
 
 
 def printconf(request):	
@@ -137,8 +156,18 @@ class SearchResultsView(ListView):
 
 def search(key = "machine learning",key2 =5 ):
 	
+	
+	context =[]
 	keyword = key
 	keyword = keyword.lower()
+	for x in keyword.split():
+		mg = NewPaper.objects.filter(papername__contains=x)
+		if len(mg):
+			mg =mg.first()
+			tmp = [mg.papername,mg.authors[:20],mg.rank,"none",mg.conference]
+			if tmp not in context:
+				context.append(tmp)
+	
 	if Mkeyword.objects.filter(keyword=keyword).exists():
 		startpage = Mkeyword.objects.filter(keyword=keyword).first().pages
 	else:
@@ -149,14 +178,13 @@ def search(key = "machine learning",key2 =5 ):
 	tot = dict()
 	total =0
 	count =0
-	context =[]
 	dbres = fetchinfo.objects.filter(keyword=keyword)
 	for x in dbres:
 		
 		tmp = [x.papername,x.authors[:20],x.rank,x.url,x.conference]
 		context.append(tmp)
 	ttime = time.time()
-	Mkeyword.objects.filter(keyword=keyword.lower())
+	#Mkeyword.objects.filter(keyword=keyword.lower())
 	for mx in range(startpage, startpage+key2):
 		val = str(mx*100)
 		url = "https://api.semanticscholar.org/graph/v1/paper/search?query="+key+"&limit=100&offset="+val+"&fields=title,authors,venue,year,citationCount,influentialCitationCount,url,isOpenAccess"
@@ -215,6 +243,7 @@ def search(key = "machine learning",key2 =5 ):
 			
 			obj =Mkeyword.objects.filter(keyword=keyword).first()
 			obj.pages= mx+1
+			obj.frequency = obj.frequency+1
 			obj.save()
 			break
 	

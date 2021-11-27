@@ -30,8 +30,11 @@ class conferencedata(models.Model):
 class Mkeyword(models.Model):
 	keyword = models.CharField(max_length=100,help_text='keyword for search',default ="NULL" )
 	pages=models.IntegerField(help_text="Pages already seen")
-	
-
+	frequency = models.IntegerField(help_text="frequency of keyword search",default =1)
+	def __str__(self):
+        	return keyword
+        	
+        
 
 class FrequentPaper(models.Model):
     """A typical class defining a model, derived from the Model class."""

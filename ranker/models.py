@@ -32,7 +32,7 @@ class Mkeyword(models.Model):
 	pages=models.IntegerField(help_text="Pages already seen")
 	frequency = models.IntegerField(help_text="frequency of keyword search",default =1)
 	def __str__(self):
-        	return keyword
+        	return self.keyword
         	
         
 

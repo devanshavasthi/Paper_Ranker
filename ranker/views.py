@@ -3,7 +3,7 @@ from django.http import HttpResponse,JsonResponse
 from django.conf import settings
 from itertools import islice
 from django.views.generic import TemplateView, ListView
-from .models import FrequentPaper,NewPaper, fetchinfo,conferencedata,Mkeyword
+from .models import NewPaper, fetchinfo,conferencedata,Mkeyword
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.contrib.auth.models import User
 from django.db.models import Max
@@ -20,8 +20,23 @@ import requests
 
 # Create your views here.
 
-def index(request):
-	return render(request,'index.html')
+
+class indexView(ListView):
+    template_name = 'index.html'
+
+    def get_queryset(self): # new
+        
+        return index()
+
+def index():
+	res = Mkeyword.objects.all()
+	context = []
+	
+	for x in res:
+		tmp = [x.keyword,x.frequency]
+		context.append(tmp)
+	context = sorted(context,key = lambda x : x[1],reverse =True) 
+	return context[:10]
 
 #-----new html page added-----
 def paper(request):
@@ -251,7 +266,6 @@ def search(key = "machine learning",key2 =3 ):
 		tmp = [x.papername,x.authors[:20],x.rank,x.url,x.conference]
 		context.append(tmp)
 	
-	context.sort(key = lambda x : x[2] )
 	print("time taken : ",time.time() - ttime)
 
 	return context

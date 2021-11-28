@@ -31,7 +31,8 @@ def paper(request):
 		authors = request.POST.get('author')
 		conference = request.POST.get('conference')
 		rank = request.POST.get('rank')
-		paper = NewPaper(papername=papername, authors=authors, conference=conference, rank=rank, date = datetime.today())
+		url = request.POST.get('url')
+		paper = NewPaper(papername=papername, authors=authors, conference=conference, rank=rank,url = url, date = datetime.today())
 		paper.save()
 	return render(request,'paper.html')
 
@@ -75,11 +76,12 @@ def paperData():
 	obj = Mkeyword.objects.aggregate(Max('frequency'))
 	maxf =obj["frequency__max"] 
 	obj = Mkeyword.objects.filter(frequency = maxf).first()
+	if(obj==None):
+		return []
 	kname = obj.keyword
 	context =[]
 	dbres = fetchinfo.objects.filter(keyword=kname)
 	for x in dbres:
-		
 		tmp = [x.papername,x.authors[:20],x.rank,x.url,x.conference]
 		context.append(tmp)
 	return context
@@ -154,7 +156,7 @@ class SearchResultsView(ListView):
         return search(query)
         
 
-def search(key = "machine learning",key2 =5 ):
+def search(key = "machine learning",key2 =3 ):
 	
 	
 	context =[]
@@ -164,7 +166,7 @@ def search(key = "machine learning",key2 =5 ):
 		mg = NewPaper.objects.filter(papername__contains=x)
 		if len(mg):
 			mg =mg.first()
-			tmp = [mg.papername,mg.authors[:20],mg.rank,"none",mg.conference]
+			tmp = [mg.papername,mg.authors[:20],mg.rank,mg.url,mg.conference]
 			if tmp not in context:
 				context.append(tmp)
 	
@@ -174,17 +176,12 @@ def search(key = "machine learning",key2 =5 ):
 		sb = Mkeyword(keyword=keyword,pages =0)
 		sb.save()
 		startpage=0
+	
 	key = keyword.replace(" ","+").lower()
 	tot = dict()
 	total =0
 	count =0
-	dbres = fetchinfo.objects.filter(keyword=keyword)
-	for x in dbres:
-		
-		tmp = [x.papername,x.authors[:20],x.rank,x.url,x.conference]
-		context.append(tmp)
 	ttime = time.time()
-	#Mkeyword.objects.filter(keyword=keyword.lower())
 	for mx in range(startpage, startpage+key2):
 		val = str(mx*100)
 		url = "https://api.semanticscholar.org/graph/v1/paper/search?query="+key+"&limit=100&offset="+val+"&fields=title,authors,venue,year,citationCount,influentialCitationCount,url,isOpenAccess"
@@ -219,13 +216,12 @@ def search(key = "machine learning",key2 =5 ):
 			cit_var = int(x["citationCount"])
 			inflc_var = int(x["influentialCitationCount"] )
 			url_var = x["url"]	
-			
+			rank_var = "Asd"
 			if(conf_var!= "" and  conf_var!= "NULL"):
 				if conferencedata.objects.all().filter(name=conf_var): 
 					rank_var = conferencedata.objects.filter(name=conf_var).first().rank
 				elif conferencedata.objects.all().filter(abbrv=conf_var) :
-					rank_var = conferencedata.objects.filter(abbrv=conf_var).first().rank
-				
+					rank_var = conferencedata.objects.filter(abbrv=conf_var).first().rank					
 				else:
 					if conf_var in tot:
 						tot[conf_var] +=1
@@ -233,10 +229,11 @@ def search(key = "machine learning",key2 =5 ):
 						tot[conf_var] =1
 					continue			
 				count+=1
-				tmp = [papername_var,auth_var[:20],rank_var,url_var,conf_var]
-				#print(count , tmp)
-				context.append(tmp)
-				#print(tmp)
+				if len(rank_var) > 2:
+					continue	
+				
+				
+				rank_var = rank_var[0]
 				b = fetchinfo(keyword =keyword,paperid = pid_var,papername = papername_var,rank =rank_var, authors = auth_var, conference = conf_var,url = url_var, citations = cit_var,infcitations =  inflc_var )
 				b.save()
 		if count >10:
@@ -247,10 +244,16 @@ def search(key = "machine learning",key2 =5 ):
 			obj.save()
 			break
 	
+	dbres = fetchinfo.objects.filter(keyword=keyword)
+	for x in dbres:
+		if len(x.rank) >3 :
+			continue
+		tmp = [x.papername,x.authors[:20],x.rank,x.url,x.conference]
+		context.append(tmp)
+	
+	context.sort(key = lambda x : x[2] )
 	print("time taken : ",time.time() - ttime)
-	#print(context)
-	#for z in context:
-	#	print(z)
+
 	return context
 	
 

@@ -17,6 +17,8 @@ class fetchinfo(models.Model):
 	access = models.BooleanField(default = False)
 	def __str__(self):
         	return self.papername
+	class Meta:
+		ordering = ['rank']
         	
 class conferencedata(models.Model):
 	name = models.CharField(max_length=100,help_text='conference name',default ="NULL" )
@@ -59,6 +61,7 @@ class NewPaper(models.Model):
     authors=models.CharField(max_length=300,help_text="Enter names of authors of the paper")
     conference=models.CharField(max_length=100,blank=True,null=True,default="NA")
     rank=models.CharField(max_length=2,help_text="Rank of conference")
+    url = models.URLField(max_length=200, null = True , default = "https://www.semanticscholar.org/")
     #-----Adding date field-----
     date = models.DateField()
     def __str__(self):

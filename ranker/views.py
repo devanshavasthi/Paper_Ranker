@@ -171,11 +171,10 @@ class SearchResultsView(ListView):
         return search(query)
         
 
-def search(key = "machine learning",key2 =3 ):
+def search(keyword = "machine learning",key2 =3 ):
 	
 	
 	context =[]
-	keyword = key
 	keyword = keyword.lower()
 	for x in keyword.split():
 		mg = NewPaper.objects.filter(papername__contains=x)
@@ -192,7 +191,7 @@ def search(key = "machine learning",key2 =3 ):
 		sb.save()
 		startpage=0
 	
-	key = keyword.replace(" ","+").lower()
+	key = keyword.replace(" ","+")
 	tot = dict()
 	total =0
 	count =0

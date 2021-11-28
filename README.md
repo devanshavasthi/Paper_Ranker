@@ -2,7 +2,8 @@
 
 python 3 needed
 
-install django using pip3 install django
+install django using 
+	pip3 install django
 
 open terminal where manage.py is presernt and run following command 
 
@@ -14,6 +15,8 @@ and execute following commands to setup database
 	python3 manage.py makemigrations		
 	python3 manage.py migrate
 	python3 manage.py runserver
+
+then navigate to http://127.0.0.1:8000/conf to add conferences to the database
 
 
 
